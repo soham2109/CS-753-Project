@@ -7,5 +7,5 @@
 
 2. Datasets
 
-	- For emotion detection network: RAVDESS speech dataset  
-	- For speech to text network: Google Audioset  
+	- For emotion detection network: [RAVDESS speech dataset](https://doi.org/10.1371/journal.pone.0196391)  
+	- For speech to text network: [Google Audioset](https://research.google.com/audioset/)  
