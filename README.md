@@ -9,3 +9,7 @@
 
 	- For emotion detection network: [RAVDESS speech dataset](https://doi.org/10.1371/journal.pone.0196391)  
 	- For speech to text network: [Google Audioset](https://research.google.com/audioset/)  
+	
+3. References
+	- https://imatge.upc.edu/web/projects/speech2signs-spoken-sign-language-translation-using-neural-networks
+	- https://heartbeat.fritz.ai/the-3-deep-learning-frameworks-for-end-to-end-speech-recognition-that-power-your-devices-37b891ddc380
