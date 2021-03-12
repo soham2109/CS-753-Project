@@ -131,3 +131,5 @@ dmypy.json
 # Dont upload irrelevant pdfs
 /papers/*.pdf
 
+# Dont upload dataset
+/dataset/*
