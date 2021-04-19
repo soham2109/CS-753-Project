@@ -14,3 +14,4 @@ tqdm
 urllib
 wavio
 zipfile
+scipy
