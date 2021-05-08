@@ -14,40 +14,48 @@ WAVE_OUTPUT_FILE="audio.wav"
 TEMP_OUTPUT_FILE="audio_16k.wav"
 INPUT_DEVICE=0
 
+class record_audio:
 
-def save_recording(frames):
-	if not frames:
-		raise ValueError("No frames recorded.")
-	recorder = pyaudio.PyAudio()
-	wavfile = wave.open(WAVE_OUTPUT_FILE,"wb")
-	wavfile.setnchannels(MAX_INPUT_CHANNELS)
-	wavfile.setsampwidth(recorder.get_sample_size(pyaudio.paInt16))
-	wavfile.setframerate(DEFAULT_SAMPLE_RATE)
-	wavfile.writeframes(b''.join(frames))
-	wavfile.close()
+	def __init__(self):
+		self.stop_audio = 0
+		self.recorder = pyaudio.PyAudio()
 
-	#Using ffmpeg to convert the sampling rate to 16k
-	os.system(f"ffmpeg -i {WAVE_OUTPUT_FILE} -ac 1 -ar 16000 -y {TEMP_OUTPUT_FILE}")
-	os.system(f"mv {TEMP_OUTPUT_FILE} {WAVE_OUTPUT_FILE}")
+	def save_recording(self,frames):
+		if not frames:
+			raise ValueError("No frames recorded.")
+		wavfile = wave.open(WAVE_OUTPUT_FILE,"wb")
+		wavfile.setnchannels(MAX_INPUT_CHANNELS)
+		wavfile.setsampwidth(self.recorder.get_sample_size(pyaudio.paInt16))
+		wavfile.setframerate(DEFAULT_SAMPLE_RATE)
+		wavfile.writeframes(b''.join(frames))
+		wavfile.close()
+
+		#Using ffmpeg to convert the sampling rate to 16k
+		os.system(f"ffmpeg -i {WAVE_OUTPUT_FILE} -ac 1 -ar 16000 -b:a 320000 -y {TEMP_OUTPUT_FILE}")
+		os.system(f"mv {TEMP_OUTPUT_FILE} {WAVE_OUTPUT_FILE}")
 
 
-def record():
-	recorder = pyaudio.PyAudio()
-	stream = recorder.open(format=pyaudio.paInt16,
-						   channels=MAX_INPUT_CHANNELS,
-						   rate=DEFAULT_SAMPLE_RATE,
-						   input=True,
-						   frames_per_buffer=CHUNKSIZE,
-						   input_device_index=INPUT_DEVICE)
-	frames=[]
-	for i in range(0, int(DEFAULT_SAMPLE_RATE / CHUNKSIZE * DURATION)):
-		data = stream.read(CHUNKSIZE)
-		frames.append(data*10)
+	def record(self):
+#		recorder = pyaudio.PyAudio()
+		stream = self.recorder.open(format=pyaudio.paInt16,
+							   channels=MAX_INPUT_CHANNELS,
+							   rate=DEFAULT_SAMPLE_RATE,
+							   input=True,
+							   frames_per_buffer=CHUNKSIZE,
+							   input_device_index=INPUT_DEVICE)
+		frames=[]
+		for i in range(0, int(DEFAULT_SAMPLE_RATE / CHUNKSIZE * DURATION)):
+		#while not self.stop_audio:
+			data = stream.read(CHUNKSIZE)
+			frames.append(data)
 
-	stream.stop_stream()
-	stream.close()
-	recorder.terminate()
-	save_recording(frames)
+		stream.stop_stream()
+		stream.close()
+		self.recorder.terminate()
+		self.save_recording(frames)
+
+	def stop(self):
+		self.stop_audio=1
 
 
 def get_device_info():
@@ -64,44 +72,51 @@ def get_device_info():
 
 
 def main():
+	st.set_page_config(layout="wide")
 	title="Speech to Sign-Language."
 	st.title(title)
 	header="ASR speech to text demo."
 	st.header(header)
+
+	st.subheader("Display the working audio ports in your device to record audio.")
 	device_text = ""
 	if st.button("Get Device Audio Ports Info"):
 		device_text=get_device_info()
-		st.write(device_text)
+		st.text(device_text)
 
+	audio_recorder = record_audio()
+	st.subheader("Record audio for prediction.")
 	if st.button("Record"):
-		with st.spinner(f"Recording for {DURATION} seconds."):
-			record()
+		with st.spinner(f"Recording."):
+			audio_recorder.record()
 			st.success("Recording done. Let's hear the recording.")
+#	if st.button("Stop"):
+#			audio.recorder.stop()
 	# if text=="Sucess":
 
-
+	st.subheader("Play the recorded audio.")
 	if st.button("Play"):
 		try:
 			audio_file = open(WAVE_OUTPUT_FILE,"rb")
 			audio_bytes = audio_file.read()
-#			audio_placeholder = st.empty()
-#			mymidia_str = "data:audio/wav;base64,%s"%(base64.b64encode(audio_bytes).decode())
-#			mymidia_html = """
-#				<audio autoplay class="stAudio">
-#				<source src="%s" type="audio/wav">
-#				Your browser does not support the audio element.
-#				</audio>
-#			"""%mymidia_str
-#			time.sleep(1)
-#			audio_placeholder.empty()
-#			audio_placeholder.markdown(mymidia_html, unsafe_allow_html=True)
 			st.audio(audio_bytes, format="audio/wav")
 			audio_file.close()
 		except:
 			st.write("Please record sound first")
 
-	if st.button("Convert Speech to Text"):
-		st.write("Under construction.")
+	st.subheader("Predictions")
+	if st.button("Convert Speech to Text and detect Emotion"):
+		col1, col2, col3 = st.beta_columns(3)
+
+		col1.header("Predicted Text")
+		col1.write("Under Construction")
+
+		col2.header("Predicted Emotion")
+		col2.write("Under Construction")
+
+		col3.header("Sign Language Video")
+		col3.write("Under Construction")
+
 
 if __name__=="__main__":
 	main()
