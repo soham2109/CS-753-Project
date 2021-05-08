@@ -15,3 +15,5 @@ urllib
 wavio
 zipfile
 scipy
+streamlit
+PyAudio
