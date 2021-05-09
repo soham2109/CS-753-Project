@@ -1,10 +1,14 @@
-import streamlit as st
+
 #PAGE_CONFIG = {"page_title":"StColab.io","page_icon":":smiley:","layout":"centered"}
 #st.beta_set_page_config(**PAGE_CONFIG)
-import pyaudio
+
 import wave
 import os
 import base64
+
+import pyaudio
+import streamlit as st
+from espnet_decoder import decode
 
 DURATION=10 # record for 10 seconds
 MAX_INPUT_CHANNELS=1 # mono audio recording
@@ -72,7 +76,9 @@ def get_device_info():
 
 
 def main():
-	st.set_page_config(layout="wide")
+	st.set_page_config(layout="centered",
+						page_icon=":smiley:",
+						page_title="CS 753 Project")
 	title="Speech to Sign-Language."
 	st.title(title)
 	header="ASR speech to text demo."
@@ -106,10 +112,16 @@ def main():
 
 	st.subheader("Predictions")
 	if st.button("Convert Speech to Text and detect Emotion"):
-		col1, col2, col3 = st.beta_columns(3)
+		decoded_text, decoding_time, plot = decode(WAVE_OUTPUT_FILE)
 
-		col1.header("Predicted Text")
-		col1.write("Under Construction")
+		col1, col2, col3 = st.beta_columns(4)
+
+		with col1:
+			st.header("Predicted Text")
+			st.pyplot(plot)
+			st.write("The decoded text of the audio clip:")
+			st.text(decoded_text)
+			st.write(f"Decoding time taken: {decoding_time}s")
 
 		col2.header("Predicted Emotion")
 		col2.write("Under Construction")
