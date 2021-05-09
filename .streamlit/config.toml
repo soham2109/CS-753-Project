@@ -1,3 +1,17 @@
+[client]
+caching=true
+showErrorDetails = true
+
+[runner]
+magicEnabled=true
+
+[server]
+enableXsrfProtection = true
+
+[logger]
+level = "info"
+messageFormat = "%(asctime)s %(levelname) -7s %(name)s: %(message)s"
+
 [theme]
 primaryColor = "#d33682"
 backgroundColor = "#002b36"

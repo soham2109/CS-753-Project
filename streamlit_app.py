@@ -1,28 +1,37 @@
-
-#PAGE_CONFIG = {"page_title":"StColab.io","page_icon":":smiley:","layout":"centered"}
-#st.beta_set_page_config(**PAGE_CONFIG)
+#!/usr/bin/env python3
 
 import wave
 import os
 import base64
+import time
+import configparser
 
 import pyaudio
 import streamlit as st
-from espnet_decoder import decode
+import librosa
+import librosa.display
+import matplotlib.pyplot as plt
+from espnet_decoder import ESPNet_Decoder
 
-DURATION=10 # record for 10 seconds
-MAX_INPUT_CHANNELS=1 # mono audio recording
-DEFAULT_SAMPLE_RATE=44100 # 44.1KHz sampling rate default for mic
-CHUNKSIZE=8192
+#plt.rc("text", usetex=True)
+plt.style.use("bmh")
+
+config = configparser.ConfigParser()
+config.read("config.ini")
+# CONSTANTS FOR AUDIO RECORDING
+DURATION=int(config.get("streamlit","duration")) # record for 10 seconds
+MAX_INPUT_CHANNELS=int(config.get("streamlit","max_input_channels")) # mono audio recording
+DEFAULT_SAMPLE_RATE=int(config.get("streamlit","sample_rate"))# 44.1KHz sampling rate default for mic
+CHUNKSIZE=int(config.get("streamlit","chunksize"))
 WAVE_OUTPUT_FILE="audio.wav"
-TEMP_OUTPUT_FILE="audio_16k.wav"
-INPUT_DEVICE=0
+TEMP_OUTPUT_FILE=config.get("streamlit","temp_out_file")
+INPUT_DEVICE=int(config.get("streamlit","input_device"))
+
 
 class record_audio:
-
 	def __init__(self):
-		self.stop_audio = 0
 		self.recorder = pyaudio.PyAudio()
+
 
 	def save_recording(self,frames):
 		if not frames:
@@ -35,7 +44,7 @@ class record_audio:
 		wavfile.close()
 
 		#Using ffmpeg to convert the sampling rate to 16k
-		os.system(f"ffmpeg -i {WAVE_OUTPUT_FILE} -ac 1 -ar 16000 -b:a 320000 -y {TEMP_OUTPUT_FILE}")
+		os.system(f"ffmpeg -i {WAVE_OUTPUT_FILE} -ac 1 -ar 16000 -y {TEMP_OUTPUT_FILE}")
 		os.system(f"mv {TEMP_OUTPUT_FILE} {WAVE_OUTPUT_FILE}")
 
 
@@ -58,8 +67,16 @@ class record_audio:
 		self.recorder.terminate()
 		self.save_recording(frames)
 
-	def stop(self):
-		self.stop_audio=1
+
+	def display_audio(self, audio_path=WAVE_OUTPUT_FILE, sr=16000):
+		data, _ = librosa.load(audio_path, sr=sr)
+		fig=plt.figure(figsize=(8,3))
+		librosa.display.waveplot(data, sr=sr, alpha=0.5)
+		plt.grid(True)
+		plt.title("Recorded Audio Waveform")
+		plt.xlabel("Time")
+		plt.ylabel("Amplitude")
+		return fig
 
 
 def get_device_info():
@@ -74,15 +91,21 @@ def get_device_info():
 		out_text.append(out)
 	return "\n\n".join(out_text)
 
+@st.cache(allow_output_mutation=True)
+def get_decoder():
+	return ESPNet_Decoder()
+
 
 def main():
-	st.set_page_config(layout="centered",
-						page_icon=":smiley:",
-						page_title="CS 753 Project")
+	decoder = get_decoder()
+#	st.set_page_config(layout="centered",
+#						page_icon=":smiley:",
+#						page_title="CS 753 Project")
 	title="Speech to Sign-Language."
 	st.title(title)
 	header="ASR speech to text demo."
 	st.header(header)
+
 
 	st.subheader("Display the working audio ports in your device to record audio.")
 	device_text = ""
@@ -93,6 +116,9 @@ def main():
 	audio_recorder = record_audio()
 	st.subheader("Record audio for prediction.")
 	if st.button("Record"):
+		st.write("When the prompt to Speak comes, speak for 10secs.")
+		time.sleep(5)
+		st.write("You can Speak Now.")
 		with st.spinner(f"Recording."):
 			audio_recorder.record()
 			st.success("Recording done. Let's hear the recording.")
@@ -103,6 +129,9 @@ def main():
 	st.subheader("Play the recorded audio.")
 	if st.button("Play"):
 		try:
+			st.pyplot(audio_recorder.display_audio(),
+					  width=5,
+					  height=5)
 			audio_file = open(WAVE_OUTPUT_FILE,"rb")
 			audio_bytes = audio_file.read()
 			st.audio(audio_bytes, format="audio/wav")
@@ -112,15 +141,14 @@ def main():
 
 	st.subheader("Predictions")
 	if st.button("Convert Speech to Text and detect Emotion"):
-		decoded_text, decoding_time, plot = decode(WAVE_OUTPUT_FILE)
+		decoded_text, decoding_time = decoder.decode(WAVE_OUTPUT_FILE)
 
-		col1, col2, col3 = st.beta_columns(4)
+		col1, col2, col3 = st.beta_columns(3)
 
 		with col1:
 			st.header("Predicted Text")
-			st.pyplot(plot)
-			st.write("The decoded text of the audio clip:")
-			st.text(decoded_text)
+			st.subheader("The decoded text of the audio clip:")
+			st.write(decoded_text)
 			st.write(f"Decoding time taken: {decoding_time}s")
 
 		col2.header("Predicted Emotion")
