@@ -23,7 +23,7 @@ DURATION=int(config.get("streamlit","duration")) # record for 10 seconds
 MAX_INPUT_CHANNELS=int(config.get("streamlit","max_input_channels")) # mono audio recording
 DEFAULT_SAMPLE_RATE=int(config.get("streamlit","sample_rate"))# 44.1KHz sampling rate default for mic
 CHUNKSIZE=int(config.get("streamlit","chunksize"))
-WAVE_OUTPUT_FILE="audio.wav"
+WAVE_OUTPUT_FILE=config.get("streamlit","wave_out_file")
 TEMP_OUTPUT_FILE=config.get("streamlit","temp_out_file")
 INPUT_DEVICE=int(config.get("streamlit","input_device"))
 

@@ -1,3 +1,4 @@
+curl -b cookies.txt -c cookies.txt --data 'uname=193070001&passwd=shivam1301%25' https://internet.iitb.ac.in
 06-May-21 14:36:19 - root - DEBUG - Model Parameters:
 06-May-21 14:36:19 - root - DEBUG - --------------------------------------
 

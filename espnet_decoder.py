@@ -21,7 +21,7 @@ LM_TRAIN_CONFIG=config.get("espnet","lm_train_config")
 LM_FILE=config.get("espnet","lm_file")
 ASR_CONFIG_FILE=config.get("espnet","asr_train_config")
 ASR_MODEL_FILE=config.get("espnet","asr_model_file")
-
+DURATION=config.get("streamlit","duration")
 
 class ESPNet_Decoder:
 
@@ -54,9 +54,9 @@ class ESPNet_Decoder:
 		complete_text=[]
 		# number of data_samples in 10 secs = Fs*10
 		# total #10sec_chunks = (total_data_points)/(Fs*10)
-		num_chunks = math.ceil(len(data)/(Fs*10))
+		num_chunks = math.ceil(len(data)/(Fs*DURATION))
 		for i in range(num_chunks):
-			nbests = self.speech2text(data[i*Fs*10:(i+1)*Fs*10])
+			nbests = self.speech2text(data[i*Fs*DURATION:(i+1)*Fs*DURATION])
 			text, *_ = nbests[0]
 			complete_text.append(self.text_normalizer(text))
 
