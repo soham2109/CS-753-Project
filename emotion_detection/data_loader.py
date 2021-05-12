@@ -43,7 +43,7 @@ class RAVDESS:
 			self.download_RAVDESS(self.root_dir)
 			logging.debug("Downloading and extraction of the RAVDESS dataset is completed.")
 		self.paths = self.data_paths()
-		train_paths = random.sample(self.paths, round(0.8*self.paths)
+		train_paths = random.sample(self.paths, round(0.8*self.paths))
 		valid_paths = [i for i in self.paths if i not in train_paths]
 		self.audio_paths = self.paths
 		if loader=="train":
@@ -134,7 +134,7 @@ class RAVDESS:
 			for file in files:
 				if file.endswith(self._ext_audio):
 					identifiers = file[:len(self._ext_audio)].split("-")
-					path = os.path.join(self.audio_path,"Actor_",identifiers[-1],file)
+					path = os.path.join(self.audio_path,"Actor_"+identifiers[-1],file)
 					audio_paths.append((path, identifiers[2]))
 		return audio_paths
 
@@ -197,7 +197,7 @@ def data_processing(data, data_type="train"):
 
 def get_dataset():
 	train_dataset = RAVDESS(root_dir="../dataset/", loader="train",) #download=True)
-	validation_dataset = RAVDESS(folder, url="test-clean",) #download=True)
+	validation_dataset = RAVDESS(root_dir="../dataset/", loader="valid") #download=True)
 	return train_dataset, validation_dataset
 
 
