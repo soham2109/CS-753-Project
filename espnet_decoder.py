@@ -21,7 +21,7 @@ LM_TRAIN_CONFIG=config.get("espnet","lm_train_config")
 LM_FILE=config.get("espnet","lm_file")
 ASR_CONFIG_FILE=config.get("espnet","asr_train_config")
 ASR_MODEL_FILE=config.get("espnet","asr_model_file")
-DURATION=config.get("streamlit","duration")
+DURATION=int(config.get("streamlit","duration"))
 
 class ESPNet_Decoder:
 
