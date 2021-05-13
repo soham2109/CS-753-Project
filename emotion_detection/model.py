@@ -14,17 +14,21 @@ class EmotionRecognizer(nn.Module):
 				 input_dims=128,
 				 hidden_dims=256,
 				 num_classes=8,
+				 pool_size=8,
 				 stride=1,
 				 dropout=0.2,
 				 kernel_size=5):
-		super.__init__(self)
-		self.conv1 = nn.Conv2d(input_dims, 32,
+		super(EmotionRecognizer, self).__init__()
+		self.conv1 = nn.Conv2d(1,
+							   64,
 							   kernel_size= kernel_size,
 							   stride=stride,
 							   padding= kernel_size//2)
-		self.dropout = nn.Dropout(dropout)
-		self.relu = nn.ReLu()
-		self.conv2 = nn.Conv2d(32, 64,
+		self.dropout1 = nn.Dropout(dropout)
+		self.dropout2 = nn.Dropout(dropout)
+		self.max_pool = nn.MaxPool2d(kernel_size=(8))
+		self.relu = nn.ReLU()
+		self.conv2 = nn.Conv2d(64, 64,
 							   kernel_size= kernel_size,
 							   stride=stride,
 							   padding= kernel_size//2)
@@ -35,6 +39,15 @@ class EmotionRecognizer(nn.Module):
 		self.linear = nn.Linear(hidden_dims, num_classes)
 		self.softmax = nn.Softmax()
 
-	def forward(x):
+	def forward(self, x):
 		x = self.conv1(x)
 		x = self.relu(x)
+		x = self.dropout1(x)
+#		x = self.max_pool(x)
+		x = self.conv2(x)
+		x = self.relu(x)
+		x = self.dropout2(x)
+		#x = nn.Flatten(x)
+		x = self.lstm(x)
+		x = self.linear(x)
+		x = self.softmax(x)

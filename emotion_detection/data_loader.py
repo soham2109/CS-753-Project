@@ -12,6 +12,8 @@ import random
 import tqdm
 import torch
 import torchaudio
+import torch.nn as nn
+import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 
 
@@ -43,7 +45,7 @@ class RAVDESS:
 			self.download_RAVDESS(self.root_dir)
 			logging.debug("Downloading and extraction of the RAVDESS dataset is completed.")
 		self.paths = self.data_paths()
-		train_paths = random.sample(self.paths, round(0.8*self.paths))
+		train_paths = random.sample(self.paths, round(0.8*len(self.paths)))
 		valid_paths = [i for i in self.paths if i not in train_paths]
 		self.audio_paths = self.paths
 		if loader=="train":
@@ -133,7 +135,7 @@ class RAVDESS:
 		for _,_, files in os.walk(self.audio_path):
 			for file in files:
 				if file.endswith(self._ext_audio):
-					identifiers = file[:len(self._ext_audio)].split("-")
+					identifiers = file[:-len(self._ext_audio)].split("-")
 					path = os.path.join(self.audio_path,"Actor_"+identifiers[-1],file)
 					audio_paths.append((path, identifiers[2]))
 		return audio_paths
@@ -144,10 +146,19 @@ class RAVDESS:
 
 
 	def __getitem__(self, idx):
+		holder = torch.zeros((1,10*16000))
 		waveform, sample_rate = torchaudio.load(self.audio_paths[idx][0])
-		emotion = [0]*len(self._emotions)
-		emotion[int(self.audio_paths[idx][1][-1])-1]=1
-		return waveform, sample_rate, torch.Tensor(emotion)
+		waveform, sample_rate = torchaudio.sox_effects.apply_effects_tensor(waveform,
+																			sample_rate,
+																		    effects=[['rate', '16000']])
+		if waveform.shape[0]>1:
+			waveform = waveform.mean(axis=0)
+			waveform = waveform.reshape(1, len(waveform))
+
+		# emotion = [0]*len(self._emotions)
+		emotion=int(self.audio_paths[idx][1][-1])-1
+		holder[:,:waveform.shape[1]] = waveform
+		return holder, sample_rate, torch.Tensor(emotion)
 
 
 def audio_transforms(sample_rate=48000, nfeats=128):
@@ -169,12 +180,11 @@ def audio_transforms(sample_rate=48000, nfeats=128):
 
 	return train_audio_transforms, valid_audio_transforms
 
-
+# max_dim = 422
 def data_processing(data, data_type="train"):
 	spectrograms = []
 	labels = []
-	input_lengths = []
-	label_lengths = []
+	global max_dim
 
 	train_audio_transforms, valid_audio_transforms = audio_transforms()
 
@@ -183,16 +193,14 @@ def data_processing(data, data_type="train"):
 			spec = train_audio_transforms(waveform).squeeze(0).transpose(0, 1)
 		else:
 			spec = valid_audio_transforms(waveform).squeeze(0).transpose(0, 1)
+
 		spectrograms.append(spec)
-		#label = torch.Tensor(text_transform.text_to_int(utterance.lower()))
 		labels.append(emotion)
-		#input_lengths.append(spec.shape[0]//2)
-		#label_lengths.append(len(label))
 
 	spectrograms = nn.utils.rnn.pad_sequence(spectrograms, batch_first=True).unsqueeze(1).transpose(2, 3)
 	labels = nn.utils.rnn.pad_sequence(labels, batch_first=True)
 
-	return spectrograms, labels #, input_lengths, label_lengths
+	return spectrograms, labels
 
 
 def get_dataset():

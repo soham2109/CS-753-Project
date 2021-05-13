@@ -151,9 +151,9 @@ if __name__=="__main__":
 						'val_wer': log['val_wer'],
 						}, MODEL_PATH)
 
-	logging.debug("Average Test CER : {}%, with Minimum Test CER: {}%".format(
-											100.0*sum(log["val_cer"])/len(log["val_cer"]),
-											100*min(log["val_cer"])))
-	logging.debug("Average Test WER : {}%, with Minimum Test WER: {}%".format(
-											100.0*sum(log["val_wer"])/len(log["val_wer"]),
-											100*min(log["val_wer"])))
+		logging.debug("Average Test CER : {}%, with Minimum Test CER: {}%".format(
+												100.0*sum(log["val_cer"])/len(log["val_cer"]),
+												100*min(log["val_cer"])))
+		logging.debug("Average Test WER : {}%, with Minimum Test WER: {}%".format(
+												100.0*sum(log["val_wer"])/len(log["val_wer"]),
+												100*min(log["val_wer"])))
