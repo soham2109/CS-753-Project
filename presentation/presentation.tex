@@ -117,23 +117,70 @@ The Conformer-based model architecture \footcite{espnet} is as follows:
 \end{itemize}
 \end{frame}
 
+\begin{frame}{ESPNet Architecture (Contd.)}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\begin{figure}
+		\centering
+		\includegraphics[width = \textwidth]{images/espnet_pipeline.png}
+		\caption{Conformer Module Architecture}
+	\end{figure}
+	\begin{figure}
+		\centering
+		\includegraphics[width = 0.6\textwidth]{images/conv.png}
+		\caption{Conv Module in the Conformer Model}
+	\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+	\begin{figure}
+		\centering
+		\includegraphics[width = \textwidth]{images/attention.png}
+		\caption{Multi-Head Attention Module}
+	\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
 \section{Emotion Recognition}
 \begin{frame}{Emotion Recogition}
 \begin{itemize}
 	\item \textbf{Motivation}:\\
 	Often the emotion carried out by an utterence cannot be properly conveyed using sign-language.
 	\item \textbf{Dataset}: RAVDESS \footcite{ravdess}
-	\item Data Pre-processing:
+	\item \textbf{Data Pre-processing}:
 	\begin{itemize}
-		\item Convert the input speech signal into 128-dimensional Mel-Spectogram
+		\item Convert the input speech signal into 40-dimensional MFCC features.
 	\end{itemize}
-	\item Model:
+	\item \textbf{Model}:
 	\begin{itemize}
 		\item The model used is a CNN-based model with a softmax layer, trained on Sparse Categorical Cross-Entropy Loss.
-		\item Model Accuracy: $72\%$
-		
+		\item Model Accuracy: $72\%$		
 	\end{itemize}
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Results from the model trained}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\begin{figure}
+		\centering
+		\includegraphics[width = 0.8\textwidth]{images/graph.jpeg}
+		\caption{Train and Validation Accuracy Plot}
+	\end{figure}
+	\begin{figure}
+		\centering
+		\includegraphics[width = 0.8\textwidth]{images/graph2.jpeg}
+		\caption{Train and Validation Loss}
+	\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+	\begin{figure}
+		\centering
+		\includegraphics[width = \textwidth]{images/cm.jpeg}
+		\caption{Confusion Matrix}
+	\end{figure}
+	\end{column}
+\end{columns}
 \end{frame}
 
 \section{Text to Sign Language Conversion}
@@ -185,7 +232,16 @@ The Conformer-based model architecture \footcite{espnet} is as follows:
 
 The accuracy of the toolkit depends on the accuracy of the models in general and we hope to integrate the text to ASL feature in future.
 \end{frame}
-		 
+
+\section{Work Load Division}
+\begin{frame}{Work Load Division}
+\begin{itemize}
+	\item \textbf{Soham Naha}: Speech2text, Webapp Integration using \texttt{streamlit}, presentation
+	\item \textbf{Mohit Agarwala}: Speech2text, presentation, Speech to ASL research
+	\item \textbf{Abhinav Goud Bingi}: Speech to Emotion
+\end{itemize}
+\end{frame}
+ 
 \section{References}
 \begin{frame}{References}
 	\tiny    
