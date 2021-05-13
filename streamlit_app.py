@@ -7,11 +7,13 @@ import time
 import configparser
 
 import pyaudio
+import keras
 import streamlit as st
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
 from espnet_decoder import ESPNet_Decoder
+from emotion_decoder import detect_emotion
 
 #plt.rc("text", usetex=True)
 plt.style.use("bmh")
@@ -92,12 +94,16 @@ def get_device_info():
 	return "\n\n".join(out_text)
 
 @st.cache(allow_output_mutation=True)
-def get_decoder():
+def get_espnet_decoder():
 	return ESPNet_Decoder()
 
+@st.cache(allow_output_mutation=True)
+def get_emotion_decoder():
+	return keras.models.load_model('dataset/Emotion_Voice_Detection_Model.h5')
 
 def main():
-	decoder = get_decoder()
+	decoder = get_espnet_decoder()
+	emo_decoder = get_emotion_decoder()
 #	st.set_page_config(layout="centered",
 #						page_icon=":smiley:",
 #						page_title="CS 753 Project")
@@ -151,8 +157,11 @@ def main():
 			st.write(decoded_text)
 			st.write(f"Decoding time taken: {decoding_time}s")
 
-		col2.header("Predicted Emotion")
-		col2.write("Under Construction")
+		with col2:
+			st.header("Predicted Emotion")
+			st.subheader("The decoded emotion from the audio clip is:\n")
+			out = detect_emotion(emo_decoder, WAVE_OUTPUT_FILE)
+			st.write(out)
 
 		col3.header("Sign Language Video")
 		col3.write("Under Construction")
