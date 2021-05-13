@@ -47,7 +47,7 @@ class ESPNet_Decoder:
 
 
 	def decode(self, audio_path, sr=Fs):
-		print("Model is loaded")
+		print("Model is loaded. The path to the audio file is {}".format(audio_path))
 		data, _ = librosa.load(audio_path, sr=sr)
 		data = data*10
 		start = time.time()

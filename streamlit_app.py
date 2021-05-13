@@ -56,8 +56,8 @@ class record_audio:
 							   channels=MAX_INPUT_CHANNELS,
 							   rate=DEFAULT_SAMPLE_RATE,
 							   input=True,
-							   frames_per_buffer=CHUNKSIZE,
-							   input_device_index=INPUT_DEVICE)
+							   frames_per_buffer=CHUNKSIZE,)
+							   #input_device_index=INPUT_DEVICE)
 		frames=[]
 		for i in range(0, int(DEFAULT_SAMPLE_RATE / CHUNKSIZE * DURATION)):
 		#while not self.stop_audio:

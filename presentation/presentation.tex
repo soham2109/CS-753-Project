@@ -81,7 +81,7 @@ Given a speech utterence from a speaker who is trying to convey a message to a p
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Task1: Speech to Text}
+\begin{frame}{Task1: Speech to Text (Contd.)}
 \begin{itemize}
 	\item Dataset: LIBRISPEECH \footcite{librispeech}
 	\item We initially wanted to train our own Speech2Text network using a CTC-Beam Search based CNN-LSTM model.
@@ -184,11 +184,11 @@ The Conformer-based model architecture \footcite{espnet} is as follows:
 \end{frame}
 
 \section{Text to Sign Language Conversion}
-\begin{frame}{Text to Speech Conversion}
+\begin{frame}{Text to ASL Conversion}
 \begin{itemize}
 	\item We thought of building a speech to sign-language tool, by first converting the speech to text and for every word map to american sign-language (ASL) representation.
 	\item \textcolor{red!60!white}{**Disclaimer:
-{\small We could not implement the text ot sign language part.}}
+{\small We could not implement the text to sign language part.}}
 	\item We came across several datasets that converted the letters to ASL hand-images, but that was not what we intended.
 	\item There were other Unity and Blender based Avatar models, but that were not truly capable of direct text to ASL conversion, because of limited datasets.
 	\item We got an architecture that treated this problem as a \href{https://github.com/arunnair411/Speech-to-ASL}{GAN-based model}, but we could not implement  it due constraints.
