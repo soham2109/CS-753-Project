@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper]{report}
+\documentclass[14pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -9,7 +9,17 @@
     backend=bibtex,
     style=authoryear
 ]{biblatex}
-
+\bibliography{../biblio.bib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=cyan!60!white,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={Sharelatex Example},
+    bookmarks=true,
+    pdfpagemode=FullScreen,
+}
 
 %------------%
 % Author Info
@@ -46,6 +56,35 @@
 \begin{document}
 \maketitle
 
+\newpage
+\section{Problem Statement and Motivation}
+A speech and/or hearing impaired person communicates with others using Sign-Language (SL), that is different from the speech modes of communication. There are a lot of literatures that deal with the problem of conversion from Sign-Language (predominantly American Sign Language or ASL) letters to speech, but the reverse domain is not much explored.
+
+\subsection{Problem Statement}
+We choose to explore the domain from speech to ASL. So, our primary task was, given a speech utterence from a speaker convey a message to a person who is hearing-impaired and/or voiceless, then speech has to be converted in a form that the other person can understand, i.e. in a sign language.
+
+\subsection{Motivation}
+Most of the literature that is present regarding the field of SL and Speech are related to the field of SL-to-Speech conversion with limited vocabulary datasets.
+
+But research related to the other direction, i.e. from Speech-to-SL is not much explored. In this project, we thus aimed to explore the domain from Speech to Sign-Language with the help of Automatic Speech Recognition. 
+This could be used as a conversation model for the speech and/or hearing impaired to interact freely with people who don't have knowledge of SL.
+
+It is also noticeable that conversion of speech-to-SL does not necessarily contain the emotion conveyed through the utterence. So, we also tried to add this emotion part along with the other decodings.
+
+
+\section{Task at Hand}
+In order to convert from Speech-to-SL along with emotions, we tried to follow the approach as stated below:
+\begin{itemize}
+	\item Convert Speech to English Text
+	\item Guess the Emotion conveyed within the utterence in parallel to text estimation
+	\item Use the predicted text to estimate the sign-language patterns.
+\end{itemize}
+So, we modularized the complete pipeline into different blocks that can be trained and modelled independently and integrated again. The modules that we have are thus:
+\begin{itemize}
+	\item Speech2text
+	\item Emotion Detection from Audio
+	\item Text2ASL
+\end{itemize}
 
 
 \end{document}
